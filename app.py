@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from pyecharts.charts import Bar
 from pyecharts import options as opts
-
+import re
 
 app = Flask(__name__)
 
@@ -22,8 +22,9 @@ def index():
 
     chart_html = bar_chart.render_embed()
 
-    return render_template('index.html', chart_html=chart_html)
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
