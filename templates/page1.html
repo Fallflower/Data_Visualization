@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Flask App - Bar Chart Page</title>
+    <!-- ECharts library -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.0/dist/echarts.min.js"></script>
+</head>
+<body>
+    <h1>Bar Chart Page</h1>
+
+    <!-- Options Form -->
+    <form id="optionsForm">
+        <label for="dataSelector">Select Data:</label>
+        <select id="dataSelector" name="dataSelector">
+            <option value="data1">Data Set 1</option>
+            <option value="data2">Data Set 2</option>
+            <!-- Add more options as needed -->
+        </select>
+
+        <label for="colorSelector">Select Color:</label>
+        <input type="color" id="colorSelector" name="colorSelector" value="#3398DB">
+
+        <button type="button" onclick="updateChart()">Update Chart</button>
+    </form>
+
+    <!-- Chart Container -->
+    <div id="chartContainer" style="height: 400px;"></div>
+
+    <script>
+        // Function to update chart based on user selection
+        function updateChart() {
+            let selectedData = document.getElementById('dataSelector').value;
+            let selectedColor = document.getElementById('colorSelector').value;
+
+            // Use Ajax to send user selections to Flask backend
+            fetch('/page1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    selectedData: selectedData,
+                    selectedColor: selectedColor
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update chart using data from Flask backend
+                chart.setOption(data);
+            });
+        }
+
+        // Initial chart rendering
+        let chart = echarts.init(document.getElementById('chartContainer'));
+        updateChart();  // Call initially to load default data
+    </script>
+</body>
+</html>
