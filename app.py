@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify, Response
 from pyecharts.charts import Bar
 from pyecharts import options as opts
+from data.loader import *
+from data.illustrations import *
 import json
 import re
 
@@ -61,7 +63,33 @@ def page3():
 
 @app.route("/page3_data", methods=['GET'])
 def page3_data():
-    return jsonify(male_num=100, female_num=200, data_list=['男', '女'])
+    type = "cntry"
+    type_name = fields_map[type]
+
+    top = 10; ti = 0
+
+    cvc = count_by_column(type)
+
+    others = 0
+    values = []
+    names = []
+    for i in cvc.index:
+        if ti < top:
+            values.append(int(cvc[i]))
+            names.append(country_map[i])
+        else:
+            others += cvc[i]
+        ti += 1
+
+    if ti > top:
+        values.append(int(others))
+        names.append("其他")
+
+    data_series = []
+    for v, n in zip(values, names):
+        data_series.append({'value': v, 'name': n})
+
+    return jsonify(data_type=type_name, name_list=names, data_dict=data_series)
 
 # @app.route("/page2_data")
 # def page2_data():
