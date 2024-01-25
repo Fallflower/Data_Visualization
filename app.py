@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 ## init echarts config
 # for page1
-
+app.config['legend_list'] = ['nps (ns)']
 # for page3
 maps_map = {
     "cntry": country_map,
@@ -39,15 +39,20 @@ def page1():
 
 @app.route('/page1_post_data', methods=['POST'])
 def page1_post_data():
+    legend_list = request.form['selectedOptions'].split(',')
+
+    app.config['legend_list'] = legend_list
 
     return jsonify({'success': True})
 
 
 @app.route('/page1_get_data', methods=['GET'])
 def page1_get_data():
-    legend_list_len = 1
-    legends = ['nps (ns)']
-    bins = np.arange(0, 330, 30)
+
+    legends = app.config['legend_list']
+    legend_list_len = len(legends)
+
+    bins = np.arange(0, 300, 30)
     xis = ['[0, 30)', '[30, 60)', '[60, 90)', '[90, 120)', '[120, 150)', '[150, 180)', '[180, 210)', '[210, 240)',
            '[240, 270)', '[270, inif)']
     df = data_loader()

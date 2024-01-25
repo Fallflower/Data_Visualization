@@ -57,14 +57,38 @@
     <!-- Content -->
     <div class="content">
         <h1>Bar/Line Chart</h1>
+
         <form id="checkboxForm">
             <label><input type="checkbox" name="option" value="nps (ns)"> 发表论文数（不含） </label>
             <label><input type="checkbox" name="option" value="nps"> 发表论文数 </label>
             <label><input type="checkbox" name="option" value="cpsf (ns)"> 论文数+合著数（不含） </label>
             <label><input type="checkbox" name="option" value="cpsf"> 论文数+合著数 </label>
+            <script type="text/javascript">
+                function submitForm() {
+                    var selectedOptions = [];
+                    var checkboxes = document.querySelectorAll('input[name="option"]:checked');
+                    checkboxes.forEach(function(checkbox) {
+                        selectedOptions.push(checkbox.value);
+                    });
+                    var data = {
+                        "selectedOptions": selectedOptions.toString()
+                    };
+                    console.log(data)
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ url_for("page1_post_data") }}',
+                        data: data,
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data)
+                        }
+                    })
+                    echarts_build()
+                }
+            </script>
             <button type="button" onclick="submitForm()">Submit</button>
         </form>
-        <div id="main" style="height:500px;border: 1px solid #ccc;padding: 10px;margin: 0 auto;"></div>
+        <div id="main" style="height:900px;border: 1px solid #ccc;padding: 10px;margin: 0 auto;"></div>
         <script type="text/javascript">
             function echarts_build() {
                 var myChart = echarts.init(document.getElementById('main'));
