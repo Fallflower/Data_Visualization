@@ -26,6 +26,10 @@
             margin-left: 200px;
             padding: 20px;
         }
+        .label {
+            display: inline-block;
+            width: 100px; /* Adjust the width of labels as needed */
+        }
     </style>
 </head>
 <body>
@@ -64,57 +68,91 @@
     </div>
     <!-- Content -->
     <div class="content">
+        <h1>Page 3</h1>
+
+        <form id="myForm">
+            <label for="dropdown">Select Option:</label>
+            <select id="dropdown" name="selectedOption">
+                <option value="cntry">Country or Region</option>
+                <option value="inst_name">Institution</option>
+                <option value="sm-field">Field of Study</option>
+                <option value="sm-subfield-1">1st Subfield of Study</option>
+                <option value="sm-subfield-2">2nd Subfield of Study</option>
+            </select>
+            <label for="top_n">Top N:</label>
+            <input type="number" id="top_n" name="topn" min="1" value="7">
+            <script type="text/javascript">
+            function submitForm() {
+                var data = {
+                    "field": document.getElementById("dropdown").value,
+                    "topn": document.getElementById("top_n").value
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for("page3_post_data") }}',
+                    data: data,
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data)
+                    }
+                })
+                build_echarts()
+            }
+            </script>
+            <button type = "button" onclick="submitForm()">提交</button>
+        </form>
+
+
         <div id="main" style="height:500px;border: 1px solid #ccc;padding: 10px"></div>
         <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'));
+        function build_echarts() {
+            var myChart = echarts.init(document.getElementById('main'));
 
-        $.get('/page3_data').done(function (data) {
-            myChart.hideLoading();
-            myChart.setOption({
-                title: {
-                    text: '属性类型扇形统计图',
-                    x: 'center'
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                },
-                legend: {
-                    orient: 'vertical',
-                    left: 'left',
-                    data: data.name_list
-                },
-                series: [
-                    {
-                        name: data.data_type,
-                        type: 'pie',
-                        radius: ['40%', '70%'],
-                        avoidLabelOverlap: false,
-                        label: {
-                            show: false,
-                            position: 'center'
-                        },
-                        data: data.data_dict,
-                        {#data: [#}
-                        {#    {value: [data.male_num], name: '男'},#}
-                        {#    {value: [data.female_num], name: '女'}#}
-                        {#],#}
-                        itemStyle: {
-                            emphasis: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)',
-                                label: {
-                                    show: true,
-                                    fontSize: 40,
-                                    fontWeight: 'bold'
+            $.get('/page3_get_data').done(function (data) {
+                myChart.hideLoading();
+                myChart.setOption({
+                    title: {
+                        text: 'Statistics of ' + data.data_type,
+                        x: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: data.name_list
+                    },
+                    series: [
+                        {
+                            name: data.data_type,
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                show: false,
+                                position: 'center'
+                            },
+                            data: data.data_dict,
+                            itemStyle: {
+                                emphasis: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)',
+                                    label: {
+                                        show: true,
+                                        fontSize: 40,
+                                        fontWeight: 'bold'
+                                    }
                                 }
                             }
                         }
-                    }
-                ],
+                    ],
+                })
             })
-        })
+        }
+        build_echarts()
     </script>
     </div>
 

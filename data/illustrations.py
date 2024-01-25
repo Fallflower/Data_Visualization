@@ -33,18 +33,18 @@ fields_map = {
     "c": "论文平均被引次数",
     "npciting": "论文（2022）被引次数",
     "cprat": "被引论文比例",
-    "np6022_cited9622": "论文（1960~2022）被引数（1996~2022）",
+    "np6022 cited9622": "论文（1960~2022）被引数（1996~2022）",
     "np6022_d": "从Scopus中删除的论文数（1960~2022）",
     "np9622_d": "从Scopus中删除的论文数（1996~2022）",
-    "sm_subfield_1": "学科子领域1",
-    "sm_subfield_1_frac": "学科子领域1的百分比",
-    "sm_subfield_2": "学科子领域2",
-    "sm_subfield_2_frac": "学科子领域2的百分比",
-    "sm_field": "学科领域",
-    "sm_field_frac": "学科领域的百分比",
-    "rank_sm_subfield_1": "学科子领域1排名",
-    "rank_sm_subfield_1(ns)": "学科子领域1排名（不含）",
-    "sm_subfield_1_count": "学科子领域1的论文数量"
+    "sm-subfield-1": "学科子领域1",
+    "sm-subfield-1-frac": "学科子领域1的百分比",
+    "sm-subfield-2": "学科子领域2",
+    "sm-subfield-2-frac": "学科子领域2的百分比",
+    "sm-field": "学科领域",
+    "sm-field-frac": "学科领域的百分比",
+    "rank-sm-subfield-1": "学科子领域1排名",
+    "rank-sm-subfield-1(ns)": "学科子领域1排名（不含）",
+    "sm-subfield-1-count": "学科子领域1的论文数量"
 }
 
 country_map = {
@@ -218,5 +218,3 @@ country_map = {
     'mne': '黑山',
     'tha': '泰国'
 }
-
-

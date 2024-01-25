@@ -8,6 +8,20 @@ import re
 
 app = Flask(__name__)
 
+## init echarts config
+# for page3
+maps_map = {
+    "cntry": country_map,
+    "inst_name": None,
+    "sm-field": None,
+    "sm-subfield-1": None,
+    "sm-subfield-2": None
+}
+
+app.config['auth_field'] = 'cntry'
+app.config['topn'] = 7
+app.config['field_map'] = country_map
+
 
 @app.route('/')
 def index():
@@ -61,29 +75,52 @@ def page3():
     return render_template('page3.html')
 
 
-@app.route("/page3_data", methods=['GET'])
-def page3_data():
-    type = "cntry"
-    type_name = fields_map[type]
+@app.route("/page3_post_data", methods=['POST'])
+def page3_post_data():
+    field = request.form.get('field')
+    topn = int(request.form.get('topn'))
 
-    top = 10; ti = 0
+    if field:
+        app.config['auth_field'] = field
+        app.config['field_map'] = maps_map[field]
 
-    cvc = count_by_column(type)
+    if topn:
+        app.config['topn'] = topn
+
+    return jsonify({'success': True})
+
+@app.route("/page3_get_data", methods=['GET'])
+def page3_get_data():
+
+    field = app.config['auth_field']; type_name = fields_map[field]
+    top = app.config['topn']; ti = 0
+    field_map = app.config['field_map']
+
+    cvc = count_by_column(field)
 
     others = 0
     values = []
     names = []
-    for i in cvc.index:
-        if ti < top:
-            values.append(int(cvc[i]))
-            names.append(country_map[i])
-        else:
-            others += cvc[i]
-        ti += 1
+    if field_map:
+        for i in cvc.index:
+            if ti < top:
+                values.append(int(cvc[i]))
+                names.append(field_map[i])
+            else:
+                others += cvc[i]
+            ti += 1
+    else:
+        for i in cvc.index:
+            if ti < top:
+                values.append(int(cvc[i]))
+                names.append(i)
+            else:
+                others += cvc[i]
+            ti += 1
 
     if ti > top:
         values.append(int(others))
-        names.append("其他")
+        names.append("Others")
 
     data_series = []
     for v, n in zip(values, names):
