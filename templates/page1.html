@@ -59,7 +59,7 @@
         <h1>Bar/Line Chart</h1>
 
         <form id="checkboxForm">
-            <label><input type="checkbox" name="option" value="nps (ns)"> 发表论文数（不含） </label>
+            <label><input type="checkbox" name="option" value="nps (ns)" checked> 发表论文数（不含） </label>
             <label><input type="checkbox" name="option" value="nps"> 发表论文数 </label>
             <label><input type="checkbox" name="option" value="cpsf (ns)"> 论文数+合著数（不含） </label>
             <label><input type="checkbox" name="option" value="cpsf"> 论文数+合著数 </label>
@@ -85,6 +85,11 @@
                     })
                     echarts_build()
                 }
+
+                var checkboxes = document.querySelectorAll('input[name="option"]');
+                checkboxes.forEach(function (checkbox) {
+                    checkbox.addEventListener('change', submitForm)
+                });
             </script>
             <button type="button" onclick="submitForm()">Submit</button>
         </form>
@@ -92,6 +97,7 @@
         <script type="text/javascript">
             function echarts_build() {
                 var myChart = echarts.init(document.getElementById('main'));
+
                 $.get('./page1_get_data').done(function (data) {
                     var series2 = [];
                     for (var j=0; j < data.legend_len; j++) {
@@ -133,7 +139,8 @@
                             {
                                 type: 'category',
                                 axisTick: {show: false},
-                                data: data.xaxis_items
+                                data: ['[0, 30)', '[30, 60)', '[60, 90)', '[90, 120)', '[120, 150)', '[150, 180)', '[180, 210)', '[210, 240)',
+           '[240, 270)', '[270, inif)']
                             }
                         ],
                         yAxis: [
@@ -142,7 +149,7 @@
                             }
                         ],
                         series: series2
-                    })
+                    }, true)
                 })
             }
             echarts_build()

@@ -62,12 +62,11 @@ def page1_get_data():
     for legend in legends:
         indices = np.digitize(df[legend], bins)
         res = pd.Series(indices).value_counts().sort_index().tolist()
-        dd[legend] = res
+        dd[fields_map[legend]] = res
 
-    return jsonify(legend_list=legends,
+    return jsonify(legend_list=[fields_map[i] for i in legends],
                    legend_len=legend_list_len,
-                   data_dict=dd,
-                   xaxis_items=xis
+                   data_dict=dd
                    )
 
 
