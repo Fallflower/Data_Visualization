@@ -3,12 +3,16 @@ from pyecharts.charts import Bar
 from pyecharts import options as opts
 from data.loader import *
 from data.illustrations import *
+import numpy as np
+import pandas as pd
 import json
 import re
 
 app = Flask(__name__)
 
 ## init echarts config
+# for page1
+
 # for page3
 maps_map = {
     "cntry": country_map,
@@ -25,44 +29,41 @@ app.config['field_map'] = country_map
 
 @app.route('/')
 def index():
-    # category = ["A", "B", "C", "D", "E"]
-    # data = [5, 20, 36, 10, 75, 90]
-    #
-    # bar_chart = (
-    #     Bar()
-    #     .add_xaxis(category)
-    #     .add_yaxis("y", data)
-    #     .set_global_opts(
-    #         title_opts=opts.TitleOpts(title="Bar-Global"),
-    #     )
-    # )
-    #
-    # chart_html = bar_chart.render_embed()
-
     return render_template('index.html')
 
 
-@app.route('/page1', methods=['POST'])
+@app.route('/page1')
 def page1():
-    selected_data = request.json.get('selectedData')
-    selected_color = request.json.get('selectedColor')
+    return render_template('page1.html')
 
-    # Replace this with your actual data processing logic
-    categories = ['A', 'B', 'C', 'D', 'E']
-    data = [10, 20, 15, 25, 30]
 
-    # Create a new Bar chart based on user selection
-    bar_chart = (
-        Bar()
-        .add_xaxis(categories)
-        .add_yaxis("Selected Data", data, itemstyle_opts=opts.ItemStyleOpts(color=selected_color))
-        .set_global_opts(title_opts=opts.TitleOpts(title="Bar Chart"))
-    )
+@app.route('/page1_post_data', methods=['POST'])
+def page1_post_data():
 
-    # Convert chart options to JSON and send back to the frontend
-    chart_options = bar_chart.dump_options()
-    # return jsonify(chart_options)
-    return render_template('page1.html', chart_options=chart_options)
+    return jsonify({'success': True})
+
+
+@app.route('/page1_get_data', methods=['GET'])
+def page1_get_data():
+    legend_list_len = 1
+    legends = ['nps (ns)']
+    bins = np.arange(0, 330, 30)
+    xis = ['[0, 30)', '[30, 60)', '[60, 90)', '[90, 120)', '[120, 150)', '[150, 180)', '[180, 210)', '[210, 240)',
+           '[240, 270)', '[270, inif)']
+    df = data_loader()
+
+    dd = {}
+
+    for legend in legends:
+        indices = np.digitize(df[legend], bins)
+        res = pd.Series(indices).value_counts().sort_index().tolist()
+        dd[legend] = res
+
+    return jsonify(legend_list=legends,
+                   legend_len=legend_list_len,
+                   data_dict=dd,
+                   xaxis_items=xis
+                   )
 
 
 @app.route("/page2")

@@ -2,60 +2,130 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Flask App - Bar Chart Page</title>
-    <!-- ECharts library -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.0/dist/echarts.min.js"></script>
+    <title>Data Visualization: Homepage</title>
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='echarts.min.js') }}"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Your custom styles -->
+    <style>
+        body {
+            padding-top: 56px;
+        }
+        .sidebar {
+            position: fixed;
+            height: 100%;
+            width: 200px;
+            top: 56px;
+            left: 0;
+            padding-top: 20px;
+            background-color: #f8f9fa;
+        }
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bar Chart Page</h1>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Visualization of Statistics Data of World Top 204,643 Scientists</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <!-- Add any additional navigation items here -->
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Options Form -->
-    <form id="optionsForm">
-        <label for="dataSelector">Select Data:</label>
-        <select id="dataSelector" name="dataSelector">
-            <option value="data1">Data Set 1</option>
-            <option value="data2">Data Set 2</option>
-            <!-- Add more options as needed -->
-        </select>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="/">Home</a>
+            </li>
+            <!-- Add more items as needed -->
+        </ul>
+    </div>
 
-        <label for="colorSelector">Select Color:</label>
-        <input type="color" id="colorSelector" name="colorSelector" value="#3398DB">
+    <!-- Content -->
+    <div class="content">
+        <h1>Bar/Line Chart</h1>
+        <form id="checkboxForm">
+            <label><input type="checkbox" name="option" value="nps (ns)"> 发表论文数（不含） </label>
+            <label><input type="checkbox" name="option" value="nps"> 发表论文数 </label>
+            <label><input type="checkbox" name="option" value="cpsf (ns)"> 论文数+合著数（不含） </label>
+            <label><input type="checkbox" name="option" value="cpsf"> 论文数+合著数 </label>
+            <button type="button" onclick="submitForm()">Submit</button>
+        </form>
+        <div id="main" style="height:500px;border: 1px solid #ccc;padding: 10px;margin: 0 auto;"></div>
+        <script type="text/javascript">
+            function echarts_build() {
+                var myChart = echarts.init(document.getElementById('main'));
+                $.get('./page1_get_data').done(function (data) {
+                    var series2 = [];
+                    for (var j=0; j < data.legend_len; j++) {
+                        series2.push({
+                            name: data.legend_list[j],
+                            type: 'bar',
+                            barGap: 0,
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: data.data_dict[data.legend_list[j]]
+                        })
+                    }
 
-        <button type="button" onclick="updateChart()">Update Chart</button>
-    </form>
-
-    <!-- Chart Container -->
-    <div id="chartContainer" style="height: 400px;"></div>
-
-    <script>
-        // Function to update chart based on user selection
-        function updateChart() {
-            let selectedData = document.getElementById('dataSelector').value;
-            let selectedColor = document.getElementById('colorSelector').value;
-
-            // Use Ajax to send user selections to Flask backend
-            fetch('/page1', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    selectedData: selectedData,
-                    selectedColor: selectedColor
+                    myChart.setOption({
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        legend: {
+                            data: data.legend_list
+                        },
+                        toolbox: {
+                            show: true,
+                            orient: 'vertical',
+                            left: 'right',
+                            top: 'center',
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar', 'stack']},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                axisTick: {show: false},
+                                data: data.xaxis_items
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value'
+                            }
+                        ],
+                        series: series2
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Update chart using data from Flask backend
-                chart.setOption(data);
-            });
-        }
+            }
+            echarts_build()
+        </script>
+    </div>
 
-        // Initial chart rendering
-        let chart = echarts.init(document.getElementById('chartContainer'));
-        updateChart();  // Call initially to load default data
-    </script>
+    <!-- Bootstrap JS (optional, for some features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
