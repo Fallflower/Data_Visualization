@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-{#    <meta http-equiv="X-UA-Compatible" content="IE=edge">#}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page2</title>
+    <title>Data Visualization: Homepage</title>
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='echarts.min.js') }}"></script>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Your custom styles -->
@@ -31,7 +32,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Your App Name</a>
+            <a class="navbar-brand" href="/">Visualization of Statistics Data of World Top 204,643 Scientists</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -49,26 +50,112 @@
             <li class="nav-item">
                 <a class="nav-link active" href="/">Home</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/page1">Page 1</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/page2">Page 2</a>
-            </li>
             <!-- Add more items as needed -->
         </ul>
     </div>
 
-    <!-- ECharts library -->
-    <script src="{{ url_for('static', filename='echarts.min.js') }}"></script>
     <!-- Content -->
     <div class="content">
-        <h1>Page 2</h1>
-        <!--为ECharts准备一个具备大小（宽高）的Dom-->
-        <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;"></div>
+        <h1>Bar/Line (Stack) Chart</h1>
 
-        <script src="../static/js/my_bar.js"></script>
+        <form id="checkboxForm">
+            <label><input type="checkbox" name="option" value="nps (ns)" checked> 发表论文数（不含） </label>
+            <label><input type="checkbox" name="option" value="nps"> 发表论文数 </label>
+            <label><input type="checkbox" name="option" value="cpsf (ns)"> 论文数+合著数（不含） </label>
+            <label><input type="checkbox" name="option" value="cpsf"> 论文数+合著数 </label>
+            <script type="text/javascript">
+                function submitForm() {
+                    var selectedOptions = [];
+                    var checkboxes = document.querySelectorAll('input[name="option"]:checked');
+                    checkboxes.forEach(function(checkbox) {
+                        selectedOptions.push(checkbox.value);
+                    });
+                    var data = {
+                        "selectedOptions": selectedOptions.toString()
+                    };
+                    console.log(data)
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ url_for("page1_post_data") }}',
+                        data: data,
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data)
+                        }
+                    })
+                    echarts_build()
+                }
+
+                var checkboxes = document.querySelectorAll('input[name="option"]');
+                checkboxes.forEach(function (checkbox) {
+                    checkbox.addEventListener('change', submitForm)
+                });
+            </script>
+{#            <button type="button" onclick="submitForm()">Submit</button>#}
+        </form>
+        <div id="main" style="height:900px;border: 1px solid #ccc;padding: 10px;margin: 0 auto;"></div>
+        <script type="text/javascript">
+            function echarts_build() {
+                var myChart = echarts.init(document.getElementById('main'));
+
+                $.get('./page1_get_data').done(function (data) {
+                    var series2 = [];
+                    for (var j=0; j < data.legend_len; j++) {
+                        series2.push({
+                            name: data.legend_list[j],
+                            type: 'bar',
+                            barGap: 0,
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: data.data_dict[data.legend_list[j]]
+                        })
+                    }
+
+                    myChart.setOption({
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        legend: {
+                            data: data.legend_list
+                        },
+                        toolbox: {
+                            show: true,
+                            orient: 'vertical',
+                            left: 'right',
+                            top: 'center',
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar', 'stack']},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        xAxis: [
+                            {
+                                type: 'category',
+                                axisTick: {show: false},
+                                data: ['[0, 30)', '[30, 60)', '[60, 90)', '[90, 120)', '[120, 150)', '[150, 180)', '[180, 210)', '[210, 240)',
+           '[240, 270)', '[270, inif)']
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value'
+                            }
+                        ],
+                        series: series2
+                    }, true)
+                })
+            }
+            echarts_build()
+        </script>
     </div>
+
     <!-- Bootstrap JS (optional, for some features) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
