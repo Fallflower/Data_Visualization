@@ -13,6 +13,14 @@ app = Flask(__name__)
 ## init echarts config
 # for page1
 app.config['legend_list'] = ['nps (ns)']
+# for page2
+app.config['fields_list'] = ['sm-field-frac']
+
+colors_dict = {
+    'sm-field-frac': {'0':'rgb(128, 255, 165)','1':'rgb(1, 191, 236)'},
+    'sm-subfield-1-frac': {'0':'rgb(0, 221, 255)','1':'rgb(77, 119, 255)'},
+    'sm-subfield-2-frac': {'0':'rgb(55, 162, 255)','1':'rgb(116, 21, 219)'},
+}
 # for page3
 maps_map = {
     "cntry": country_map,
@@ -54,8 +62,6 @@ def page1_get_data():
     legend_list_len = len(legends)
 
     bins = np.arange(0, 300, 30)
-    xis = ['[0, 30)', '[30, 60)', '[60, 90)', '[90, 120)', '[120, 150)', '[150, 180)', '[180, 210)', '[210, 240)',
-           '[240, 270)', '[270, inif)']
     df = data_loader()
 
     dd = {}
@@ -78,15 +84,38 @@ def page2():
 
 @app.route("/page2_post_data", methods=['POST'])
 def page2_post_data():
-
+    fields_list = request.form['selectedOptions'].split(',')
+    if fields_list == ['']:
+        fields_list = []
+    app.config['fields_list'] = fields_list
     return jsonify({'success': True})
 
 
 @app.route("/page2_get_data", methods=['GET'])
 def page2_get_data():
 
+    bins = np.linspace(0, 1, 50, endpoint=False)
 
-    return jsonify({'success': True})
+    fields_list = app.config['fields_list']
+
+    df = data_loader()
+    dd = {}
+    for field in fields_list:
+        dd[fields_map[field]] = {}
+        indices = np.digitize(df[field], bins)
+        vc_res = pd.Series(indices).value_counts()
+        res = np.zeros(50, dtype=int)
+        for i in vc_res.index:
+            res[i - 1] = vc_res[i]
+        dd[fields_map[field]]['data'] = res.tolist()
+        dd[fields_map[field]]['color'] = colors_dict[field]
+
+    return jsonify(
+        fields_list=[fields_map[i] for i in fields_list],
+        fields_len=len(fields_list),
+        data_dict=dd,
+        xis=[str(i) for i in bins]
+    )
 
 
 @app.route("/page3")

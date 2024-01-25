@@ -28,9 +28,10 @@ def f(column_name, xin):
 if __name__ == '__main__':
     df = data_loader('Top_scientists_2022.csv')
     # print(len(df.index))
-    bins = np.arange(0, 300, 30)
+    bins = np.linspace(0, 1, 50, endpoint=False)
     print(bins)
-    indices = np.digitize(df['nps (ns)'], bins)
+    indices = np.digitize(df['sm-field-frac'], bins)
     print(indices)
-    print(pd.Series(indices).value_counts().sort_index().tolist())
+    a = pd.Series(indices).value_counts()#.sort_index().tolist()
+    print(a)
 

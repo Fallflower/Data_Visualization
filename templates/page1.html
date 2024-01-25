@@ -99,6 +99,7 @@
                 var myChart = echarts.init(document.getElementById('main'));
 
                 $.get('./page1_get_data').done(function (data) {
+                    console.log(data)
                     var series2 = [];
                     for (var j=0; j < data.legend_len; j++) {
                         series2.push({
