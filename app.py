@@ -40,7 +40,8 @@ def page1():
 @app.route('/page1_post_data', methods=['POST'])
 def page1_post_data():
     legend_list = request.form['selectedOptions'].split(',')
-
+    if legend_list == ['']:
+        legend_list = []
     app.config['legend_list'] = legend_list
 
     return jsonify({'success': True})
@@ -75,6 +76,19 @@ def page2():
     return render_template('page2.html')
 
 
+@app.route("/page2_post_data", methods=['POST'])
+def page2_post_data():
+
+    return jsonify({'success': True})
+
+
+@app.route("/page2_get_data", methods=['GET'])
+def page2_get_data():
+
+
+    return jsonify({'success': True})
+
+
 @app.route("/page3")
 def page3():
     return render_template('page3.html')
@@ -93,6 +107,7 @@ def page3_post_data():
         app.config['topn'] = topn
 
     return jsonify({'success': True})
+
 
 @app.route("/page3_get_data", methods=['GET'])
 def page3_get_data():
@@ -132,32 +147,6 @@ def page3_get_data():
         data_series.append({'value': v, 'name': n})
 
     return jsonify(data_type=type_name, name_list=names, data_dict=data_series)
-
-# @app.route("/page2_data")
-# def page2_data():
-#     data_list = {}
-#     data1 = ['公众号：Python研究者', '直达', '营销广告', '搜索引擎', '邮件营销', '联盟广告', '视频广告', '百度', '谷歌',
-#              '必应', '其他']
-#     data_list['data1'] = data1
-#     data2 = [
-#         {'value': 2000, 'name': 'Python研究者', 'selected': True},
-#         {'value': 1548, 'name': '搜索引擎'},
-#         {'value': 775, 'name': '直达'},
-#         {'value': 679, 'name': '营销广告'}
-#     ]
-#     data_list['data2'] = data2
-#     data3 = [
-#         {'value': 1048, 'name': '百度'},
-#         {'value': 335, 'name': '直达'},
-#         {'value': 310, 'name': '邮件营销'},
-#         {'value': 251, 'name': '谷歌'},
-#         {'value': 234, 'name': '联盟广告'},
-#         {'value': 147, 'name': '必应'},
-#         {'value': 135, 'name': '视频广告'},
-#         {'value': 102, 'name': '其他'}
-#     ]
-#     data_list['data3'] = data3
-#     return Response(json.dumps(data_list), mimetype='application/json')
 
 
 if __name__ == '__main__':
