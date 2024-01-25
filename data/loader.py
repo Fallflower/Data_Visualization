@@ -16,5 +16,5 @@ def count_by_column(column_name):
 
 if __name__ == '__main__':
     df = data_loader('Top_scientists_2022.csv')
-    print(df.columns)
+    print(len(df.index))
 
