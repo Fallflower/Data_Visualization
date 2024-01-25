@@ -19,7 +19,7 @@ app.config['fields_list'] = ['sm-field-frac']
 colors_dict = {
     'sm-field-frac': {'0':'rgb(128, 255, 165)','1':'rgb(1, 191, 236)'},
     'sm-subfield-1-frac': {'0':'rgb(0, 221, 255)','1':'rgb(77, 119, 255)'},
-    'sm-subfield-2-frac': {'0':'rgb(55, 162, 255)','1':'rgb(116, 21, 219)'},
+    'sm-subfield-2-frac': {'0':'rgb(255, 0, 135)','1':'rgb(135, 0, 157)'},
 }
 # for page3
 maps_map = {

@@ -25,6 +25,7 @@ def f(column_name, xin):
     return # column_values_counted
 
 
+# for test
 if __name__ == '__main__':
     df = data_loader('Top_scientists_2022.csv')
     # print(len(df.index))
