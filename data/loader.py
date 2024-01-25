@@ -15,5 +15,6 @@ def count_by_column(column_name):
 
 
 if __name__ == '__main__':
-    cvc = count_by_column('cntry')
-    print(cvc)
+    df = data_loader('Top_scientists_2022.csv')
+    a = df['inst_name'].value_counts(ascending=False)
+    print(a)
